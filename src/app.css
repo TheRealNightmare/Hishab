@@ -1,0 +1,193 @@
+@import 'tailwindcss';
+
+/* ── Gruvbox light × neo-retro brutalism ─────────────────────────────── */
+@theme {
+	--color-bg: #fbf1c7;
+	--color-bg0h: #f9f5d7;
+	--color-bg1: #ebdbb2;
+	--color-bg2: #d5c4a1;
+	--color-bg3: #bdae93;
+	--color-fg: #3c3836;
+	--color-fg2: #504945;
+	--color-muted: #7c6f64;
+	--color-ink: #282828;
+
+	--color-red: #cc241d;
+	--color-green: #98971a;
+	--color-yellow: #d79921;
+	--color-blue: #458588;
+	--color-purple: #b16286;
+	--color-aqua: #689d6a;
+	--color-orange: #d65d0e;
+
+	--color-red-d: #9d0006;
+	--color-green-d: #79740e;
+	--color-yellow-d: #b57614;
+	--color-blue-d: #076678;
+	--color-purple-d: #8f3f71;
+	--color-aqua-d: #427b58;
+	--color-orange-d: #af3a03;
+
+	--font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+	--radius-base: 4px;
+	--shadow-hard: 4px 4px 0 0 var(--color-ink);
+	--shadow-hard-sm: 2px 2px 0 0 var(--color-ink);
+	--shadow-hard-lg: 6px 6px 0 0 var(--color-ink);
+}
+
+:root {
+	color-scheme: light;
+	--safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html,
+body {
+	background: var(--color-bg);
+	color: var(--color-fg);
+	font-family: var(--font-sans);
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	min-height: 100dvh;
+	background-image: radial-gradient(var(--color-bg2) 1px, transparent 1px);
+	background-size: 18px 18px;
+}
+
+::selection {
+	background: var(--color-yellow);
+	color: var(--color-ink);
+}
+
+:focus-visible {
+	outline: 3px solid var(--color-blue);
+	outline-offset: 2px;
+}
+
+@layer components {
+	/* Surfaces */
+	.nb-card {
+		background: var(--color-bg0h);
+		border: 2px solid var(--color-ink);
+		border-radius: var(--radius-base);
+		box-shadow: var(--shadow-hard);
+	}
+	.nb-flat {
+		background: var(--color-bg0h);
+		border: 2px solid var(--color-ink);
+		border-radius: var(--radius-base);
+	}
+
+	/* Pressable: lifts on hover, sinks into its shadow on press (neo-retro). */
+	.nb-press {
+		border: 2px solid var(--color-ink);
+		border-radius: var(--radius-base);
+		box-shadow: var(--shadow-hard);
+		transition:
+			transform 80ms ease,
+			box-shadow 80ms ease;
+	}
+	.nb-press:hover:not(:disabled) {
+		transform: translate(2px, 2px);
+		box-shadow: var(--shadow-hard-sm);
+	}
+	.nb-press:active:not(:disabled) {
+		transform: translate(4px, 4px);
+		box-shadow: none;
+	}
+	.nb-press:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.nb-input {
+		width: 100%;
+		background: var(--color-bg0h);
+		border: 2px solid var(--color-ink);
+		border-radius: var(--radius-base);
+		padding: 0.6rem 0.75rem;
+		font: inherit;
+		color: var(--color-fg);
+		box-shadow: inset 2px 2px 0 0 var(--color-bg1);
+	}
+	.nb-input:focus {
+		outline: none;
+		box-shadow: var(--shadow-hard-sm);
+		background: #fff;
+	}
+	.nb-input::placeholder {
+		color: var(--color-bg3);
+	}
+	select.nb-input {
+		appearance: none;
+		background-image: linear-gradient(45deg, transparent 50%, var(--color-ink) 50%), linear-gradient(135deg, var(--color-ink) 50%, transparent 50%);
+		background-position:
+			calc(100% - 16px) 55%,
+			calc(100% - 11px) 55%;
+		background-size: 5px 5px;
+		background-repeat: no-repeat;
+		padding-right: 2rem;
+	}
+
+	.nb-label {
+		display: block;
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		margin-bottom: 0.3rem;
+		color: var(--color-fg2);
+	}
+
+	.nb-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		border: 2px solid var(--color-ink);
+		border-radius: 999px;
+		padding: 0.1rem 0.6rem;
+		font-size: 0.75rem;
+		font-weight: 700;
+		background: var(--color-bg1);
+	}
+
+	.nb-title {
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		line-height: 1.05;
+	}
+
+	.money {
+		font-family: var(--font-mono);
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
+	}
+
+	.nb-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+	.nb-table th {
+		text-align: left;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		background: var(--color-bg1);
+		border-bottom: 2px solid var(--color-ink);
+		padding: 0.5rem;
+	}
+	.nb-table td {
+		border-bottom: 1px dashed var(--color-bg3);
+		padding: 0.5rem;
+	}
+
+	.no-scrollbar {
+		scrollbar-width: none;
+	}
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+}
