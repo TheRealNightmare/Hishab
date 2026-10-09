@@ -4,6 +4,8 @@ import { addMonths, clampDay, monthRange } from './dates';
 import { buildSchedule, emiAmount, scheduleTotals } from './emi';
 import { cardCycle, cardStatement } from './card';
 import { dueOccurrences } from './recurring';
+import { categoryDeltas, noSpendDays, pctChange, previousPeriod, projectMonthEnd, savingsRate } from './insights';
+import { debtTotals, personBalance } from './debt';
 
 describe('money', () => {
 	it('formats with lakh grouping', () => {
@@ -119,5 +121,74 @@ describe('recurring', () => {
 	});
 	it('weekly', () => {
 		expect(dueOccurrences('2026-09-20', 'weekly', '2026-10-03').dates).toEqual(['2026-09-20', '2026-09-27']);
+	});
+});
+
+describe('insights', () => {
+	it('percent change', () => {
+		expect(pctChange(1200, 1000)).toBe(20);
+		expect(pctChange(820, 1000)).toBe(-18);
+		expect(pctChange(500, 0)).toBeNull();
+	});
+	it('projects month end', () => {
+		expect(projectMonthEnd(1000000, 10, 30)).toBe(3000000);
+		expect(projectMonthEnd(500, 0, 30)).toBe(500);
+		expect(projectMonthEnd(3100, 40, 31)).toBe(3100);
+	});
+	it('category deltas, biggest change first', () => {
+		const d = categoryDeltas(
+			[
+				{ category_id: 'food', name: 'Food', icon: null, total: 5000 },
+				{ category_id: 'fun', name: 'Fun', icon: null, total: 1000 }
+			],
+			[
+				{ category_id: 'food', name: 'Food', icon: null, total: 4000 },
+				{ category_id: 'rent', name: 'Rent', icon: null, total: 3000 },
+				{ category_id: 'fun', name: 'Fun', icon: null, total: 1000 }
+			]
+		);
+		expect(d.map((x) => [x.category_id, x.delta])).toEqual([
+			['rent', -3000],
+			['food', 1000]
+		]);
+	});
+	it('no-spend days', () => {
+		const daily = [
+			{ date: '2026-10-01', total: 100 },
+			{ date: '2026-10-03', total: 50 },
+			{ date: '2026-10-09', total: 10 }
+		];
+		expect(noSpendDays(daily, '2026-10-01', '2026-10-05')).toBe(3);
+		expect(noSpendDays([], '2026-10-05', '2026-10-01')).toBe(0);
+	});
+	it('savings rate', () => {
+		expect(savingsRate(10000, 7500)).toBe(25);
+		expect(savingsRate(0, 100)).toBeNull();
+	});
+	it('previous period of equal length', () => {
+		expect(previousPeriod('2026-10-01', '2026-10-31')).toEqual({ from: '2026-08-31', to: '2026-09-30' });
+		expect(previousPeriod('2026-03-01', '2026-03-10')).toEqual({ from: '2026-02-19', to: '2026-02-28' });
+	});
+});
+
+describe('debt', () => {
+	it('lent 500, got 200 back → they owe 300', () => {
+		expect(
+			personBalance([
+				{ type: 'expense', amount: 50000 },
+				{ type: 'income', amount: 20000 }
+			])
+		).toBe(30000);
+	});
+	it('borrowed 1000, paid back 400 → you owe 600', () => {
+		expect(
+			personBalance([
+				{ type: 'income', amount: 100000 },
+				{ type: 'expense', amount: 40000 }
+			])
+		).toBe(-60000);
+	});
+	it('splits totals', () => {
+		expect(debtTotals([30000, -60000, 0, 5000])).toEqual({ owed_to_me: 35000, i_owe: 60000 });
 	});
 });

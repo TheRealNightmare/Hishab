@@ -38,6 +38,12 @@ export const POST: RequestHandler = async ({ request }) => {
 			count++;
 		}
 	}
+	// Backups made before lend/borrow existed lack its system categories.
+	stmts.push(
+		d.prepare(`INSERT OR IGNORE INTO categories (id, name, kind, icon, color, system, sort) VALUES
+			('cat_debt_out', 'Lent / Paid back', 'expense', '🤝', '#7c6f64', 'debt', 98),
+			('cat_debt_in', 'Borrowed / Got back', 'income', '🤝', '#7c6f64', 'debt', 98)`)
+	);
 	try {
 		await d.batch(stmts);
 	} catch (e) {

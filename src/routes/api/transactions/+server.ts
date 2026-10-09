@@ -6,7 +6,7 @@ import { txnStatements } from '#lib/server/txn';
 import type { RequestHandler } from './$types';
 
 /**
- * GET /api/transactions?from&to&account&category&type&tag&q&limit&offset
+ * GET /api/transactions?from&to&account&category&type&tag&person&q&limit&offset
  * Fee/interest child rows are included (they are real money movements) and carry parent_id.
  */
 export const GET: RequestHandler = async ({ url }) => {
@@ -24,6 +24,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	if (p.get('type')) add('t.type = ?', p.get('type'));
 	if (p.get('goal')) add('t.goal_id = ?', p.get('goal'));
 	if (p.get('scheme')) add('t.scheme_id = ?', p.get('scheme'));
+	if (p.get('person')) add('t.person_id = ?', p.get('person'));
 	if (p.get('tag')) add('EXISTS (SELECT 1 FROM json_each(t.tags) WHERE value = ?)', p.get('tag'));
 	if (p.get('q')) {
 		const q = `%${p.get('q')!.replace(/[%_]/g, '')}%`;

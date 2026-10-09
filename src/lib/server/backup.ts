@@ -10,6 +10,7 @@ export const EXPORT_TABLES = [
 	'goals',
 	'schemes',
 	'recurring',
+	'people',
 	'transactions',
 	'budgets'
 ] as const;

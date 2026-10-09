@@ -1,14 +1,22 @@
 <script lang="ts">
 	import Amount from './Amount.svelte';
-	import { accountName, category, openQuickAdd } from '#lib/stores.svelte';
+	import { accountName, category, openQuickAdd, person } from '#lib/stores.svelte';
+	import { formatDate } from '#lib/domain/dates';
 	import type { Txn } from '#lib/types';
 
 	let { t, showDate = false }: { t: Txn; showDate?: boolean } = $props();
 	const cat = $derived(category(t.category_id));
-	const title = $derived(t.type === 'transfer' ? `${accountName(t.account_id)} → ${accountName(t.to_account_id)}` : (cat?.name ?? 'Uncategorised'));
+	const who = $derived(person(t.person_id));
+	const title = $derived(
+		t.type === 'transfer'
+			? `${accountName(t.account_id)} → ${accountName(t.to_account_id)}`
+			: who
+				? `${t.type === 'expense' ? 'To' : 'From'} ${who.name}`
+				: (cat?.name ?? 'Uncategorised')
+	);
 	const icon = $derived(t.type === 'transfer' ? '⇄' : (cat?.icon ?? '•'));
 	const editable = $derived(!t.parent_id && !t.loan_installment_id);
-	const subtitle = $derived([showDate ? t.date : null, t.type !== 'transfer' ? accountName(t.account_id) : null, t.note].filter(Boolean).join(' · '));
+	const subtitle = $derived([showDate ? formatDate(t.date) : null, t.type !== 'transfer' ? accountName(t.account_id) : null, t.note].filter(Boolean).join(' · '));
 
 	function edit() {
 		if (!editable) return;
@@ -24,7 +32,9 @@
 			tags: t.tags,
 			fee: t.fee,
 			goal_id: t.goal_id ?? undefined,
-			scheme_id: t.scheme_id ?? undefined
+			scheme_id: t.scheme_id ?? undefined,
+			person_id: t.person_id ?? undefined,
+			title: who ? `${t.type === 'expense' ? 'Lent / paid back' : 'Borrowed / got back'} · ${who.name}` : undefined
 		});
 	}
 </script>

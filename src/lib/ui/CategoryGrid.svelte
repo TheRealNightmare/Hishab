@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { refs } from '#lib/stores.svelte';
+	import { isBookkeeping } from '#lib/meta';
 
 	let { value = $bindable(), kind }: { value: string | null | undefined; kind: 'income' | 'expense' } = $props();
-	// System 'loan' categories are booked automatically by loan flows, not picked by hand.
-	const cats = $derived(refs.categories.filter((c) => c.kind === kind && !c.archived && c.system !== 'loan'));
+	// Loan and lend/borrow categories are booked by their own flows, not picked by hand.
+	const cats = $derived(refs.categories.filter((c) => c.kind === kind && !c.archived && !isBookkeeping(c)));
 </script>
 
 <div class="grid grid-cols-4 gap-2 sm:grid-cols-5">

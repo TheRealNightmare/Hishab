@@ -46,7 +46,30 @@ export interface Txn {
 	goal_id: string | null;
 	scheme_id: string | null;
 	recurring_id: string | null;
+	person_id: string | null;
 	created_at: string;
+}
+
+export interface Favourite {
+	type: 'income' | 'expense';
+	category_id: string | null;
+	account_id: string;
+	amount: number;
+	note: string | null;
+	uses: number;
+	last_date: string;
+}
+
+export interface Person {
+	id: string;
+	name: string;
+	phone: string | null;
+	note: string | null;
+	archived: number;
+	/** Positive: they owe you. Negative: you owe them. */
+	balance?: number;
+	last_date?: string | null;
+	count?: number;
 }
 
 export interface Loan {
@@ -167,6 +190,51 @@ export interface Due {
 	overdue: boolean;
 }
 
+export interface CalendarEvent extends Omit<Due, 'kind'> {
+	kind: Due['kind'] | 'recurring';
+	paid: boolean;
+	/** Recurring entries only: which way the money goes. */
+	flow?: TxnType;
+}
+
+export interface CategoryDelta {
+	category_id: string;
+	name: string;
+	icon: string | null;
+	total: number;
+	prev: number;
+	delta: number;
+}
+
+export interface Insights {
+	is_current: boolean;
+	elapsed_days: number;
+	days_in_month: number;
+	spent_to_date: number;
+	/** Spending over the same days of last month (the whole month when looking at a past month). */
+	prev_same_span: number;
+	prev_month_total: number;
+	pace_pct: number | null;
+	projected: number | null;
+	avg_daily: number;
+	no_spend_days: number;
+	savings_rate: number | null;
+	deltas: CategoryDelta[];
+}
+
+export interface ReportInsights {
+	prev_from: string;
+	prev_to: string;
+	prev_income: number;
+	prev_expense: number;
+	deltas: CategoryDelta[];
+	biggest: Txn | null;
+	/** Spending per weekday, Sunday first. */
+	weekdays: number[];
+	avg_daily: number;
+	no_spend_days: number;
+}
+
 export interface CardSummary {
 	account_id: string;
 	period_start: string;
@@ -186,6 +254,8 @@ export interface Dashboard {
 	assets: number;
 	liabilities: number;
 	loan_outstanding: number;
+	debts: { owed_to_me: number; i_owe: number };
+	insights: Insights;
 	accounts: Account[];
 	income: number;
 	expense: number;

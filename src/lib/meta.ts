@@ -1,4 +1,4 @@
-import type { AccountType } from './types';
+import type { AccountType, CalendarEvent, Category } from './types';
 
 export const ACCOUNT_TYPES: { value: AccountType; label: string; icon: string; color: string }[] = [
 	{ value: 'cash', label: 'Cash', icon: '💵', color: '#98971a' },
@@ -27,3 +27,15 @@ export const BKASH_LOAN_PRESET = {
 	tenure_months: 3,
 	method: 'reducing' as const
 };
+
+/** Icon, colour and label for each kind of due date (dashboard, calendar). */
+export const DUE_META: Record<CalendarEvent['kind'], { icon: string; bg: string; label: string }> = {
+	emi: { icon: '🏦', bg: 'var(--color-orange)', label: 'EMI' },
+	card: { icon: '💳', bg: 'var(--color-red)', label: 'Card bill' },
+	semester: { icon: '🎓', bg: 'var(--color-blue)', label: 'Uni fee' },
+	dps: { icon: '🐖', bg: 'var(--color-aqua)', label: 'DPS' },
+	recurring: { icon: '🔁', bg: 'var(--color-purple)', label: 'Recurring' }
+};
+
+/** Categories the app books by itself (loan principal, lend/borrow), so they're hidden from pickers. */
+export const isBookkeeping = (c: Category) => c.system === 'loan' || c.system === 'debt';

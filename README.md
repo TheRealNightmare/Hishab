@@ -1,6 +1,6 @@
 # Hishab ৳
 
-A personal finance tracker for one person. It covers accounts (cash, bank, bKash/Nagad/Rocket, credit cards), salary and other income, daily spending, university semester fees, loans with EMI schedules (including the bKash digital loan), savings goals, DPS/FDR deposits, budgets and recurring entries.
+A personal finance tracker for one person. It covers accounts (cash, bank, bKash/Nagad/Rocket, credit cards), salary and other income, daily spending, university semester fees, loans with EMI schedules (including the bKash digital loan), savings goals, DPS/FDR deposits, budgets and recurring entries. It also tracks money you lend to or borrow from people, shows a calendar of everything that falls due, gives plain-language spending insights on the dashboard and in Reports, and offers one-tap "quick add" chips for the entries you repeat most.
 
 - **Frontend**: SvelteKit 3 + Svelte 5, Tailwind v4. Neo-retro brutalist design in Gruvbox light. It's an installable PWA.
 - **API**: SvelteKit `+server.ts` routes, running in the same Cloudflare Worker.
@@ -21,7 +21,7 @@ npm run check              # svelte-check + TypeScript
 ## Deploy
 
 ```sh
-npm run db:migrate:remote  # only when migrations/ changed
+npm run db:migrate:remote  # only when migrations/ changed (0002_people.sql adds lend/borrow)
 npm run deploy             # build + wrangler deploy
 ```
 
@@ -47,5 +47,8 @@ npm run deploy             # build + wrangler deploy
 - **Credit cards** carry a negative balance when you owe money. A card purchase is an expense on the card, and paying the bill is a transfer from a bank or wallet to the card. The statement for each cycle is derived from the statement day and due day.
 - **Loans**: the disbursement is booked as "Loan Received", and each EMI's principal as "Loan Repayment". Both are left out of income and expense reports. Interest is a real expense. Net worth subtracts the unpaid principal.
 - **Transfer fees** (e.g. bKash cash-out) become a linked "Charges & Fees" expense on the source account.
+- **People (lend/borrow)**: lending or paying someone back is booked as a "Lent / Paid back" expense, and borrowing or getting money back as a "Borrowed / Got back" income, each linked to the person. Your accounts really change, but these entries are left out of income and expense reports, as loan principal is. A person's balance is what you handed over minus what you received, so a positive balance means they owe you. Net worth adds what you're owed and subtracts what you owe.
+- **Insights** compare the current month with the same days of last month (1st–9th against 1st–9th), so a half-finished month isn't measured against a whole one. Reports compare the selected range with the range of equal length just before it.
+- **Quick add chips** come from history: any expense or income with the same category, account, amount and note entered at least twice in the last 90 days.
 - **Recurring rules** post automatically when the dashboard loads. The update is guarded, so a rule can't post twice.
 - **Semester cost** = fees paid plus anything in the University category dated within the semester.

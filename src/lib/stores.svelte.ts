@@ -1,9 +1,10 @@
-import type { Account, Category, TxnType } from './types';
+import type { Account, Category, Person, TxnType } from './types';
 
 /** Reference data shared by every screen; refreshed after any mutation via `changed()`. */
 export const refs = $state({
 	accounts: [] as Account[],
 	categories: [] as Category[],
+	people: [] as Person[],
 	loaded: false
 });
 
@@ -12,9 +13,10 @@ export const data = $state({ version: 0 });
 
 export async function loadRefs() {
 	const { api } = await import('./api');
-	const [accounts, categories] = await Promise.all([api.get<Account[]>('accounts'), api.get<Category[]>('categories')]);
+	const [accounts, categories, people] = await Promise.all([api.get<Account[]>('accounts'), api.get<Category[]>('categories'), api.get<Person[]>('people')]);
 	refs.accounts = accounts;
 	refs.categories = categories;
+	refs.people = people;
 	refs.loaded = true;
 }
 
@@ -25,6 +27,9 @@ export async function changed() {
 
 export const accountName = (id: string | null | undefined) => refs.accounts.find((a) => a.id === id)?.name ?? '—';
 export const category = (id: string | null | undefined) => refs.categories.find((c) => c.id === id);
+export const person = (id: string | null | undefined) => refs.people.find((p) => p.id === id);
+/** The built-in lend/borrow category: 'expense' for money handed over, 'income' for money received. */
+export const debtCategory = (kind: 'income' | 'expense') => refs.categories.find((c) => c.system === 'debt' && c.kind === kind);
 
 /* ── Quick add sheet ───────────────────────────────────────────── */
 export interface QuickAddPreset {
@@ -40,6 +45,7 @@ export interface QuickAddPreset {
 	fee?: number;
 	goal_id?: string;
 	scheme_id?: string;
+	person_id?: string;
 	title?: string;
 }
 
@@ -48,6 +54,15 @@ export const quickAdd = $state({ open: false, preset: {} as QuickAddPreset });
 export function openQuickAdd(preset: QuickAddPreset = {}) {
 	quickAdd.preset = preset;
 	quickAdd.open = true;
+}
+
+/** A short buzz on phones that support it; a no-op elsewhere. */
+export function haptic(ms = 10) {
+	try {
+		navigator.vibrate?.(ms);
+	} catch {
+		/* not supported */
+	}
 }
 
 /* ── Toasts ────────────────────────────────────────────────────── */

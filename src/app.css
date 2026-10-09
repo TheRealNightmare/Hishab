@@ -184,10 +184,52 @@ body {
 		padding: 0.5rem;
 	}
 
+	/* Loading placeholder with a slow sweep. */
+	.nb-skeleton {
+		border-radius: var(--radius-base);
+		background: linear-gradient(90deg, var(--color-bg1) 0%, var(--color-bg0h) 50%, var(--color-bg1) 100%);
+		background-size: 200% 100%;
+		animation: nb-shimmer 1.4s ease-in-out infinite;
+	}
+
 	.no-scrollbar {
 		scrollbar-width: none;
 	}
 	.no-scrollbar::-webkit-scrollbar {
 		display: none;
+	}
+}
+
+@keyframes nb-shimmer {
+	from {
+		background-position: 100% 0;
+	}
+	to {
+		background-position: -100% 0;
+	}
+}
+
+/* Comfortable tap targets on touch screens. */
+@media (pointer: coarse) {
+	.nb-chip {
+		min-height: 2.25rem;
+		padding-inline: 0.8rem;
+	}
+}
+
+/* iOS zooms into inputs smaller than 16px. */
+@media (max-width: 640px) {
+	.nb-input {
+		font-size: 16px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
 	}
 }

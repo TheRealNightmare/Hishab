@@ -4,7 +4,7 @@
 	import { accountName, category, changed, confirmDialog, lastAccount, refs, toast } from '#lib/stores.svelte';
 	import { formatBDT } from '#lib/domain/money';
 	import { formatDate, today } from '#lib/domain/dates';
-	import { SWATCHES } from '#lib/meta';
+	import { SWATCHES, isBookkeeping } from '#lib/meta';
 	import PageHeader from '#lib/ui/PageHeader.svelte';
 	import Button from '#lib/ui/Button.svelte';
 	import Sheet from '#lib/ui/Sheet.svelte';
@@ -35,7 +35,7 @@
 	let cIcon = $state('');
 	let cColor = $state(SWATCHES[0]);
 	let cParent = $state<string | null>(null);
-	const cats = $derived(refs.categories.filter((c) => c.kind === catKind && c.system !== 'loan'));
+	const cats = $derived(refs.categories.filter((c) => c.kind === catKind && !isBookkeeping(c)));
 
 	function openCat(c: Category | null) {
 		catEdit = c;
@@ -186,7 +186,7 @@
 
 	<div class="space-y-6">
 		<!-- Recurring -->
-		<section>
+		<section id="recurring" class="scroll-mt-4">
 			<div class="mb-2 flex items-center justify-between">
 				<h2 class="nb-title text-xl">Recurring</h2>
 				<Button size="sm" variant="primary" onclick={() => openRec(null)}>＋ Rule</Button>
@@ -285,7 +285,7 @@
 				<Field label="Category">
 					<select class="nb-input" bind:value={rCat}>
 						<option value={null}>—</option>
-						{#each refs.categories.filter((c) => c.kind === rType && !c.archived && c.system !== 'loan') as c (c.id)}<option value={c.id}>{c.icon} {c.name}</option>{/each}
+						{#each refs.categories.filter((c) => c.kind === rType && !c.archived && !isBookkeeping(c)) as c (c.id)}<option value={c.id}>{c.icon} {c.name}</option>{/each}
 					</select>
 				</Field>
 			{/if}

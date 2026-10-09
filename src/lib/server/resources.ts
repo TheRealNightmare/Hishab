@@ -1,7 +1,7 @@
 import type { z } from 'zod';
 import { all } from './db';
-import { accountsWithBalances, goalsWithProgress, schemesWithProgress, semestersWithFees } from './queries';
-import { accountSchema, budgetSchema, categorySchema, goalSchema, recurringSchema, schemeSchema, semesterFeeSchema, semesterSchema } from './schemas';
+import { accountsWithBalances, goalsWithProgress, peopleWithBalances, schemesWithProgress, semestersWithFees } from './queries';
+import { accountSchema, budgetSchema, categorySchema, goalSchema, personSchema, recurringSchema, schemeSchema, semesterFeeSchema, semesterSchema } from './schemas';
 
 interface Resource {
 	table: string;
@@ -28,6 +28,7 @@ export const resources: Record<string, Resource> = {
 	},
 	goals: { table: 'goals', prefix: 'goal', schema: goalSchema, list: () => goalsWithProgress() },
 	schemes: { table: 'schemes', prefix: 'sch', schema: schemeSchema, list: () => schemesWithProgress() },
+	people: { table: 'people', prefix: 'per', schema: personSchema, list: () => peopleWithBalances() },
 	budgets: { table: 'budgets', prefix: 'bud', schema: budgetSchema, list: () => all('SELECT * FROM budgets') },
 	recurring: {
 		table: 'recurring',

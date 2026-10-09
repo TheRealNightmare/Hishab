@@ -5,9 +5,11 @@ import { data } from './stores.svelte';
  * reactive state read synchronously inside `fn` changes (e.g. a selected month).
  */
 export function loader<T>(fn: () => Promise<T>) {
-	const s = $state({ value: null as T | null, loading: true, error: false });
+	let retry = $state(0);
+	const s = $state({ value: null as T | null, loading: true, error: false, reload: () => void retry++ });
 	$effect(() => {
 		void data.version;
+		void retry;
 		let stale = false;
 		s.loading = true;
 		fn()

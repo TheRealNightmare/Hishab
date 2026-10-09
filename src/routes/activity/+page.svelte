@@ -9,6 +9,8 @@
 	import TxnRow from '#lib/ui/TxnRow.svelte';
 	import Empty from '#lib/ui/Empty.svelte';
 	import Button from '#lib/ui/Button.svelte';
+	import Skeleton from '#lib/ui/Skeleton.svelte';
+	import ErrorState from '#lib/ui/ErrorState.svelte';
 	import type { Txn, TxnType } from '#lib/types';
 
 	const PAGE = 100;
@@ -100,7 +102,11 @@
 	{/if}
 </div>
 
-{#if list.value && groups.length === 0}
+{#if list.error && !list.value}
+	<ErrorState onretry={list.reload} />
+{:else if !list.value}
+	<Skeleton hero={false} rows={6} />
+{:else if groups.length === 0}
 	<Empty icon="🔍" title="No transactions">Try another month or clear filters.</Empty>
 {:else}
 	<div class="space-y-4" class:opacity-60={list.loading}>

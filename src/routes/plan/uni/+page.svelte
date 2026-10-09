@@ -123,20 +123,22 @@
 			<ul class="divide-y divide-dashed divide-bg3 border-t-2 border-ink">
 				{#each s.fees ?? [] as f (f.id)}
 					{@const overdue = !f.paid_txn_id && f.due_date && f.due_date < today()}
-					<li class="flex items-center gap-3 px-4 py-2.5 {overdue ? 'bg-red/10' : ''}">
+					<li class="flex items-start gap-3 py-2.5 pr-2 pl-4 {overdue ? 'bg-red/10' : ''}">
 						<div class="min-w-0 flex-1">
-							<div class="font-bold">{f.label}</div>
+							<div class="truncate font-bold">{f.label}</div>
 							{#if f.due_date}
-								<div class="text-xs {overdue ? 'font-bold text-red-d' : 'text-muted'}">Due {formatDate(f.due_date, 'long')} · {relativeDays(f.due_date)}</div>
+								<div class="truncate text-xs {overdue ? 'font-bold text-red-d' : 'text-muted'}">Due {formatDate(f.due_date)} · {relativeDays(f.due_date)}</div>
 							{/if}
 						</div>
-						<span class="money font-extrabold">{formatBDT(f.amount)}</span>
-						{#if f.paid_txn_id}
-							<span class="nb-chip bg-green">✓ Paid</span>
-						{:else}
-							<Button size="sm" variant="primary" onclick={() => (paying = f)}>Pay</Button>
-						{/if}
-						<button class="text-muted hover:text-red-d" aria-label="Remove fee" onclick={() => deleteFee(f)}>✕</button>
+						<div class="flex shrink-0 flex-col items-end gap-1.5">
+							<span class="money font-extrabold">{formatBDT(f.amount)}</span>
+							{#if f.paid_txn_id}
+								<span class="nb-chip bg-green">✓ Paid</span>
+							{:else}
+								<Button size="sm" variant="primary" onclick={() => (paying = f)}>Pay</Button>
+							{/if}
+						</div>
+						<button class="flex size-9 shrink-0 items-center justify-center text-muted hover:text-red-d" aria-label="Remove fee" onclick={() => deleteFee(f)}>✕</button>
 					</li>
 				{/each}
 				<li class="px-4 py-2.5">

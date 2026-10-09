@@ -22,6 +22,7 @@ export async function txnStatements(id: string, t: TxnInput, extra: Record<strin
 		tags: t.tags,
 		goal_id: t.goal_id ?? null,
 		scheme_id: t.scheme_id ?? null,
+		person_id: isTransfer ? null : (t.person_id ?? null),
 		...extra
 	};
 	const stmts = [insert('transactions', row)];

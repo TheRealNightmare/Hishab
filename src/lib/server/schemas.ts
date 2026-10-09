@@ -109,12 +109,20 @@ export const txnSchema = z
 		note: optText,
 		tags: z.array(z.string().trim().min(1).max(30)).max(10).default([]),
 		goal_id: optId,
-		scheme_id: optId
+		scheme_id: optId,
+		person_id: optId
 	})
 	.refine((t) => t.type !== 'transfer' || (t.to_account_id && t.to_account_id !== t.account_id), {
 		message: 'Transfer needs a different destination account',
 		path: ['to_account_id']
 	});
+
+export const personSchema = z.object({
+	name: z.string().trim().min(1).max(60),
+	phone: optText,
+	note: optText,
+	archived: z.number().int().min(0).max(1).optional()
+});
 
 export const loanSchema = z.object({
 	name: z.string().trim().min(1).max(60),

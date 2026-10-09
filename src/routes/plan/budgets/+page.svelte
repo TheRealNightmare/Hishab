@@ -4,6 +4,7 @@
 	import { changed, refs, toast } from '#lib/stores.svelte';
 	import { formatBDT } from '#lib/domain/money';
 	import { formatMonth, monthKey, today } from '#lib/domain/dates';
+	import { isBookkeeping } from '#lib/meta';
 	import PageHeader from '#lib/ui/PageHeader.svelte';
 	import MoneyInput from '#lib/ui/MoneyInput.svelte';
 	import Progress from '#lib/ui/Progress.svelte';
@@ -14,7 +15,7 @@
 	const budgets = loader(() => api.get<Budget[]>('budgets'));
 	const dash = loader(() => api.get<Dashboard>(`dashboard?month=${month}`));
 
-	const expenseCats = $derived(refs.categories.filter((c) => c.kind === 'expense' && !c.archived && !c.parent_id && c.system !== 'loan'));
+	const expenseCats = $derived(refs.categories.filter((c) => c.kind === 'expense' && !c.archived && !c.parent_id && !isBookkeeping(c)));
 	const spentBy = $derived(new Map((dash.value?.by_category ?? []).map((c) => [c.category_id, c.total])));
 
 	// Editable draft: category_id → paisa
